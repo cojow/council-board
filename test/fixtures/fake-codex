@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+// Offline CLI double: only writes under the temporary paths passed by the tests.
+import fs from 'node:fs';
+
+const args = process.argv.slice(2);
+if (process.env.FAKE_CODEX_CALLS) {
+  fs.appendFileSync(process.env.FAKE_CODEX_CALLS, JSON.stringify({ args, cwd: process.cwd() }) + '\n');
+}
+if (args.includes('--help')) {
+  console.log('--json --output-last-message --sandbox --cd');
+} else if (args[0] === 'debug' && args[1] === 'models') {
+  console.log(JSON.stringify({ models: [{ slug: 'gpt-6.1-sol' }, { slug: 'gpt-6-luna' }] }));
+} else if (args[0] === 'exec' && args.includes('--json') && args.includes('-o')) {
+  const text = 'Fake Codex completed the isolated task.';
+  fs.writeFileSync(args[args.indexOf('-o') + 1], text + '\n');
+  for (const event of [
+    { type: 'thread.started', thread_id: 'fake-thread' },
+    { type: 'item.completed', item: { type: 'agent_message', text } },
+    { type: 'turn.completed', usage: { input_tokens: 11, output_tokens: 7 } },
+  ]) console.log(JSON.stringify(event));
+} else {
+  console.error('Unexpected fake Codex arguments');
+  process.exitCode = 2;
+}

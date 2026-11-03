@@ -1,0 +1,15 @@
+{
+  "name": "council-board",
+  "version": "0.1.0",
+  "description": "A local message board that lets your AI coding agents (Claude Code accounts and Codex) split work, claim files, request help and debate decisions — guided setup, policies you approve.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "private": true,
+  "scripts": {
+    "setup": "node setup.mjs",
+    "doctor": "node setup.mjs doctor",
+    "test": "node --test test/",
+    "check-pii": "node scripts/check-pii.mjs"
+  }
+}
